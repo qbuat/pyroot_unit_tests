@@ -34,7 +34,12 @@ for i, event in enumerate(tree):
     truth_taus = tau_truth_tool.getTruthTauContainer()
     truth_taus_aux = tau_truth_tool.getTruthTauAuxContainer()
     truth_taus.setNonConstStore(truth_taus_aux)
-    for truth_tau in truth_taus:
-        print 'pt_vis: {0}'.format(truth_tau.auxdataConst('double')('pt_vis'))
-        print 'eta_vis: {0}'.format(truth_tau.auxdataConst('double')('eta_vis'))
-
+    for it, truth_tau in enumerate(truth_taus):
+        print ' -- truth tau %s -- ' % it
+        print 'Is it an hadronic tau: %s' % truth_tau.auxdataConst('bool')('IsHadronicTau')
+        print 'Decay mode: %s' % truth_tau.auxdataConst('std::string')('DecayMode')
+        print 'pt_vis, eta_vis, phi_vis, m_vis: {0}, {1}, {2}, {3}'.format(
+            truth_tau.auxdataConst('double')('pt_vis'),
+            truth_tau.auxdataConst('double')('eta_vis'),
+            truth_tau.auxdataConst('double')('phi_vis'),
+            truth_tau.auxdataConst('double')('m_vis'))
