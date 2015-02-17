@@ -38,6 +38,7 @@ for i, event in enumerate(tree):
         print ' -- truth tau %s -- ' % it
         print 'Is it an hadronic tau: %s' % truth_tau.auxdataConst('bool')('IsHadronicTau')
         print 'Decay mode: %s' % truth_tau.auxdataConst('std::string')('DecayMode')
+        print 'Charge = %s' % truth_tau.charge()
         print 'pt_vis, eta_vis, phi_vis, m_vis: {0}, {1}, {2}, {3}'.format(
             truth_tau.auxdataConst('double')('pt_vis'),
             truth_tau.auxdataConst('double')('eta_vis'),
