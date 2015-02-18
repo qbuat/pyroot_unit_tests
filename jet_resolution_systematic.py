@@ -1,3 +1,5 @@
+
+
 import ROOT
 ROOT.gROOT.Macro('$ROOTCOREDIR/scripts/load_packages.C')
 ROOT.xAOD.Init().ignore()
@@ -22,7 +24,9 @@ jer_smearing_tool.setJERTool(jer_tool)
 jer_smearing_tool.setNominalSmearing(True)
 jer_smearing_tool.initialize()
 
-systs = jer_smearing_tool.recommendedSystematics()
+tool = TOOLS.get('JERSmearingTool')
+print 'Get tool:', tool
+systs = tool.recommendedSystematics()
 print systs
 for syst in systs:
     print syst.name()

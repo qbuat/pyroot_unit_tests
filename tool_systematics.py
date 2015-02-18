@@ -4,15 +4,17 @@ ROOT.xAOD.Init().ignore()
 ROOT.xAOD.AuxContainerBase()
 
 
-
+store = ROOT.xAOD.TStore()
+event = ROOT.xAOD.TEvent()
 TOOLS = ROOT.asg.ToolStore()
 TOOLS_NAME = [
     'jet_calib_tool',
     'tau_smearing_tool',
-    'JESProvider',
-    'JERSmearingTool',
+    'jet_uncert_tool',
+    'met_maker_tool',
+    'met_systematic_tool',
+    'jer_smearing_tool',
 ]
-TEvent = ROOT.xAOD.TEvent()
 
 # --> jet calibration tool
 from ROOT import JetCalibrationTool
@@ -25,14 +27,14 @@ jet_calib_tool.initialize()
 
 # --> jet resolution tool
 from ROOT import JERTool, JERSmearingTool
-jer_tool = JERTool('JERTool')
+jer_tool = JERTool('jer_tool')
 jer_tool.setProperty('std::string')("PlotFileName", "JetResolution/JERProviderPlots_2012.root")
 jer_tool.setProperty('std::string')("CollectionName", "AntiKt4LCTopoJets")
 jer_tool.setProperty('std::string')("BeamEnergy", "8TeV")
 jer_tool.setProperty('std::string')("SimulationType", "FullSim")
 jer_tool.initialize()
-jer_smearing_tool = JERSmearingTool('JERSmearingTool')
-jer_smearing_tool.setProperty('std::string')('JERToolName', 'JERTool')
+jer_smearing_tool = JERSmearingTool('jer_smearing_tool')
+jer_smearing_tool.setProperty('std::string')('JERToolName', 'jer_tool')
 jer_smearing_tool.setJERTool(jer_tool)
 jer_smearing_tool.setNominalSmearing(True)
 jer_smearing_tool.initialize()
@@ -45,15 +47,28 @@ tau_smearing_tool.initialize()
 
 # --> jet uncertainties tool
 from ROOT import JetUncertaintiesTool
-jet_uncert_tool = JetUncertaintiesTool('JESProvider')
+jet_uncert_tool = JetUncertaintiesTool('jet_uncert_tool')
 jet_uncert_tool.setProperty('std::string')('JetDefinition', 'AntiKt4LCTopo')
 jet_uncert_tool.setProperty('std::string')('MCType', 'MC12')
 jet_uncert_tool.setProperty('std::string')('ConfigFile', 'JES_2012/Final/InsituJES2012_23NP_ByCategory.config')
 jet_uncert_tool.initialize()
 
+# --> MET maker tool
+from ROOT.met import METMaker
+met_making_tool = METMaker('met_maker_tool')
+met_making_tool.initialize()
+
+# --> MET Syst tool
+from ROOT.met import METSystematicsTool
+met_syst_tool = METSystematicsTool('met_systematic_tool')
+met_syst_tool.setProperty('std::string')('ConfigSoftTrkFile', 'TrackSoftTerms.config')
+met_syst_tool.setProperty('std::string')('ConfigSoftCaloFile', 'METRefFinal.config')
+met_syst_tool.initialize()
+
 
 print 40 * '='
 for name in TOOLS_NAME:
+    print '-------- {0} -------'.format(name)
     tool = TOOLS.get(name)
     if hasattr(tool, 'recommendedSystematics'):
         print tool.name(), hasattr(tool, 'applySystematicVariation')
