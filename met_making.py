@@ -25,7 +25,7 @@ met_making_tool = METMaker('met_maker_tool')
 # met_making_tool.setProperty('double')('JetMinWeightedPt', 0.)
 # met_making_tool.setProperty('bool')('DoJetJVFCut', True)
 # met_making_tool.setProperty('bool')('CorrectJetPhi', False)
-met_making_tool.initialize()
+sc = met_making_tool.initialize()
 
 store_helper = ROOT.xAOD.StorePyHelper()
 store = ROOT.xAOD.TStore()
