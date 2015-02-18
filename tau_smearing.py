@@ -17,7 +17,6 @@ tree = ROOT.xAOD.MakeTransientTree(chain)
 print tree
 
 from ROOT.TauAnalysisTools import TauSmearingTool
-
 tau_smearing_tool = TauSmearingTool('tau_smearing_tool')
 # Just a test - This is wrong to apply the shift on MC
 tau_smearing_tool.setProperty('bool')('IsData', True)
