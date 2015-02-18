@@ -22,8 +22,23 @@ for i in xrange(event.getEntries()):
     print 20 * '-'
     print '######  EVENT {0} ######'.format(i) 
     event.getEntry(i)
+    print 'Copy containers ...'
+    event.copy('EventInfo').ignore()
     event.copy('AntiKt4LCTopoJets').ignore()
+    event.copy('TauRecContainer').ignore()
     event.fill()
-
 event.finishWritingTo(out_file).ignore()
+
+out_file.Close()
+in_file.Close()
+
+print 30 * '*'
+test_file = ROOT.TFile('out.root', 'read')
+tree = ROOT.xAOD.MakeTransientTree(test_file)
+
+for i in xrange(tree.GetEntries()):
+    tree.GetEntry(i)
+    print 20 * '-'
+    print '######  EVENT {0} ######'.format(i) 
+    print [tau.pt() for tau in tree.TauRecContainer]
 
