@@ -42,5 +42,11 @@ for i in xrange(tree.GetEntries()):
     tree.GetEntry(i)
     print 20 * '-'
     print '######  EVENT {0} ######'.format(i) 
-    print [tau.pt() for tau in tree.TauRecContainer]
+    print tree.EventInfo.runNumber()
+    print tree.AntiKt4LCTopoJets[0].pt()
+    print tree.TauRecContainer[0].pt()
+    jets = tree.AntiKt4LCTopoJets
+    taus = tree.TauRecContainer
+    print [jet.pt() for jet in jets]
+    print [tau.pt() for tau in taus]
 
