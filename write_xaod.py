@@ -23,18 +23,20 @@ for i in xrange(event.getEntries()):
     print '######  EVENT {0} ######'.format(i) 
     event.getEntry(i)
     print 'Copy containers ...'
-    event.copy('EventInfo').ignore()
-    event.copy('AntiKt4LCTopoJets').ignore()
-    event.copy('TauRecContainer').ignore()
+    event.copy('EventInfo')
+    event.copy('AntiKt4LCTopoJets')
+    event.copy('TauRecContainer')
     event.fill()
-event.finishWritingTo(out_file).ignore()
+event.finishWritingTo(out_file)
 
 out_file.Close()
 in_file.Close()
 
 print 30 * '*'
-test_file = ROOT.TFile('out.root', 'read')
-tree = ROOT.xAOD.MakeTransientTree(test_file)
+
+ch = ROOT.TChain('CollectionTree')
+ch.Add('out.root')
+tree = ROOT.xAOD.MakeTransientTree(ch)
 
 for i in xrange(tree.GetEntries()):
     tree.GetEntry(i)
