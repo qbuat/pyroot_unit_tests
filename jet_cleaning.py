@@ -25,6 +25,7 @@ jet_cleaning_tool = JetCleaningTool(JetCleaningTool.LooseBad)
 
 
 for i, event in enumerate(tree):
+    print i
     jets = event.AntiKt4LCTopoJets
     event_pass = True
     for jet in jets:
