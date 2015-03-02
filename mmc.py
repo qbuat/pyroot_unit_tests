@@ -20,6 +20,7 @@ from ROOT import MissingMassTool
 mass_tool = MissingMassTool('mass_tool')
 mass_tool.initialize()
 
+
 for i, event in enumerate(tree):
     if i > 10:
         break
@@ -39,6 +40,7 @@ for i, event in enumerate(tree):
             njets_25 += 1
     print njets_25
     met = tree.MET_RefFinal[0]
+
     ei = tree.EventInfo
     mass_tool.apply(ei, tau1, tau2, met, njets_25)
     print ei.auxdataConst('double')('mmc0_mass')
