@@ -18,6 +18,7 @@ print tree
 
 from ROOT import MissingMassTool
 mass_tool = MissingMassTool('mass_tool')
+mass_tool.setProperty(int)('UseVerbose', 1)
 mass_tool.initialize()
 
 

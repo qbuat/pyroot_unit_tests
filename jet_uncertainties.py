@@ -19,6 +19,13 @@ from ROOT import JetUncertaintiesTool
 
 store_helper = ROOT.xAOD.StorePyHelper()
 
+from ROOT import JetCalibrationTool
+jet_calib_tool = JetCalibrationTool('jet_calib_tool')
+jet_calib_tool.setProperty('std::string')('JetCollection', 'AntiKt4LCTopo')
+jet_calib_tool.setProperty('std::string')('ConfigFile', 'JES_Full2012dataset_May2014.config')
+jet_calib_tool.setProperty('std::string')('CalibSequence', 'JetArea_Residual_Origin_EtaJES_GSC')
+jet_calib_tool.setProperty('bool')('IsData', False)
+jet_calib_tool.initialize()
 
 from ROOT import JetUncertaintiesTool
 jet_uncert_tool = JetUncertaintiesTool('JESProvider')
@@ -27,15 +34,10 @@ jet_uncert_tool.setProperty('std::string')('MCType', 'MC12')
 jet_uncert_tool.setProperty('std::string')('ConfigFile', 'JES_2012/Final/InsituJES2012_23NP_ByCategory.config')
 jet_uncert_tool.initialize()
 
-syst_set = ROOT.CP.SystematicSet()
-syst_set.insert(ROOT.CP.SystematicVariation('Flavor_Response', -3.0))
-syst_set.insert(ROOT.CP.SystematicVariation('Flavor_Composition', -2.0))
-
-jet_uncert_tool.applySystematicVariation(syst_set)
+systs = jet_uncert_tool.recommendedSystematics()
 
 
-
-store = ROOT.xAOD.TStore()
+store = ROOT.xAOD.TPyStore()
 for i, event in enumerate(tree):
     if i > 10:
         break
@@ -45,10 +47,18 @@ for i, event in enumerate(tree):
     jets = tree.AntiKt4LCTopoJets
     jets_copy = store_helper.shallowCopyJetContainer(jets)
     jet = jets[0]
-
+    for jet in jets_copy:
+        jet_calib_tool.applyCorrection(jet)
     jet_copy = jets_copy[0]
+    
     print 'BEFORE Jet: pt(orig), pt(copy) = ', jet.pt(), jet_copy.pt()
-    jet_uncert_tool.applyCorrection(jet_copy)
-    print 'AFTER Jet: pt(orig), pt(copy) = ', jet.pt(), jet_copy.pt()
+    for s in systs:
+        s_set = ROOT.CP.SystematicSet()
+        s_set.insert(s)
+        jet_uncert_tool.applySystematicVariation(s_set)
+        jets_mod = store_helper.shallowCopyJetContainer(jets_copy, 'Jets_' + s.name())
+        jet_mod = jets_mod[0]
+        jet_uncert_tool.applyCorrection(jet_mod)
+        print '\t', s.name(), jet_mod.pt()
     store.clear()
 

@@ -29,38 +29,26 @@ print tree
 # met_making_tool.setProperty('bool')('CorrectJetPhi', False)
 # sc = met_making_tool.initialize()
 
-from ROOT import METHandler
-met_tool = METHandler(False)
+# from ROOT import METHandler
+# met_tool = METHandler(False)
 
 store_helper = ROOT.xAOD.StorePyHelper()
-store = ROOT.xAOD.TStore()
+store = ROOT.xAOD.TPyStore()
 
 for i, event in enumerate(tree):
-    if i > 100:
+    if i > 10:
         break
     mets = tree.MET_RefFinal
-    met = mets[0]
+    met = mets['Final']
 
 
     mets_copy = store_helper.shallowCopyMissingETContainer(mets)
-    met_copy = mets_copy[0]
-    # taus_copy = store_helper.shallowCopyTauJetContainer(taus)
+    met_copy = mets_copy['Final']
+    jets_copy = store_helper.shallowCopyJetContainer(event.AntiKt4LCTopoJets)
 
-    electrons = event.ElectronCollection
-    photons = event.PhotonCollection
-    taus = event.TauRecContainer
-    muons = event.Muons
-    jets = event.AntiKt4LCTopoJets
-    met_map = event.METMap_RefFinal
-    sc = met_tool.setMET(
-        mets_copy, met_map, electrons, photons,
-        taus, muons, jets)
-    calib_mets = met_tool.getCalibratedMET()
-    met_calib = calib_mets[0]
-    # print calib_met, calib_met[0].met()
     if met.met() > 0:
         print 20 * '-'
         print '######  EVENT {0} ######'.format(i) 
-        print 'MET (orig), (copy), (calib) = ', met.met(), met_copy.met(), met_calib.met()
+        print 'MET (orig), (copy), (calib) = ', met.met(), met_copy.met()
     store.clear()
 
