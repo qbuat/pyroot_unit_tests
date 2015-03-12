@@ -15,8 +15,11 @@ files = [
 ]
 
 in_file = ROOT.TFile(files[0], 'read')
-event = ROOT.xAOD.TPyEvent()
-store = ROOT.xAOD.TPyStore()
+
+from xAODRootAccess.TPyEvent import TPyEvent
+from xAODRootAccess.TPyStore import TPyStore
+event = TPyEvent()
+store = TPyStore()
 store_helper = ROOT.xAOD.StorePyHelper()
 
 # event.readFrom(in_file).ignore()
@@ -36,36 +39,31 @@ for i, evt in enumerate(in_tree):
     ei = evt.EventInfo
     taus = evt.TauRecContainer
     jets = evt.AntiKt4LCTopoJets
-    if not event.record(ei, 'EventInfo', ei.__class__.__name__).isSuccess():
-        raise RuntimeError
-    if not event.record(
-        ei.getConstStore(), 'EventInfoAux.', 
-        ei.getConstStore().__class__.__name__).isSuccess():
+
+    if not event.record(ei, 'EventInfo').isSuccess():
         raise RuntimeError
 
-    if not event.record(taus, 'Taus', taus.__class__.__name__).isSuccess():
+    if not event.record(ei.getConstStore(), 'EventInfoAux.').isSuccess(): 
         raise RuntimeError
-    is_success = event.record(
-        taus.getConstStore(), 'TausAux.', 
-        taus.getConstStore().__class__.__name__).isSuccess()
-    if not is_success:
+
+    if not event.record(taus, 'Taus').isSuccess():
+        raise RuntimeError
+    if not event.record(taus.getConstStore(), 'TausAux.') .isSuccess():
         raise RuntimeError
 
 
-    taus_copy = store_helper.shallowCopyTauJets(taus)
-    print taus_copy
-    taus_copy.second.setShallowIO(False)
-    if not event.record(taus_copy.first, 'TausCopy', taus_copy.first.__class__.__name__).isSuccess():
-        raise RuntimeError
-    if not event.record(taus_copy.second, 'TausCopyAux.', taus_copy.second.__class__.__name__).isSuccess():
-        raise RuntimeError
+    # taus_copy = store_helper.shallowCopyTauJets(taus)
+    # print taus_copy
+    # taus_copy.second.setShallowIO(False)
+    # if not event.record(taus_copy.first, 'TausCopy', taus_copy.first.__class__.__name__).isSuccess():
+    #     raise RuntimeError
+    # if not event.record(taus_copy.second, 'TausCopyAux.', taus_copy.second.__class__.__name__).isSuccess():
+    #     raise RuntimeError
     
 
-    if not event.record(jets, 'Jets', jets.__class__.__name__).isSuccess():
+    if not event.record(jets, 'Jets').isSuccess():
         raise RuntimeError
-    if not event.record(
-        jets.getConstStore(), 'JetsAux.', 
-        jets.getConstStore().__class__.__name__).isSuccess():
+    if not event.record(jets.getConstStore(), 'JetsAux.').isSuccess():
         raise RuntimeError
     
     event.fill()
